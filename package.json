@@ -8,8 +8,16 @@
     "url": "git://github.com/dominictarr/level-search.git"
   },
   "dependencies": {
+    "bytewise": "0.5.0",
+    "pull-stream": "2.20",
+    "pull-level": "1.1.8"
   },
   "devDependencies": {
+    "level-sublevel": "4.7",
+    "level-test": "1.3",
+    "tape": "1.0.4",
+    "optimist": "0.6",
+    "pull-fs": "1.1.3"
   },
   "scripts": {
     "test": "set -e; for t in test/*.js; do node $t; done"

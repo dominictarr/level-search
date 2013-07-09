@@ -2,7 +2,6 @@ var pairs = require('./pairs')
 var bytewise = require('./bytewise')
 var pl    = require('pull-level')
 var pull  = require('pull-stream')
-//var pathway = require('pathway')
 
 function isString (s) {
   return 'string' === typeof s

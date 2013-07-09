@@ -49,5 +49,3 @@ function pairs (obj) {
   return Object.keys(all).sort().map(JSON.parse)
 }
 
-if(!module.parent)
-  console.log(pairs(require(process.argv[2])))

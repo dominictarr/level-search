@@ -1,0 +1,19 @@
+{
+  "name": "level-search",
+  "description": "universal search for leveldb",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dominictarr/level-search",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dominictarr/level-search.git"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "test": "set -e; for t in test/*.js; do node $t; done"
+  },
+  "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
+  "license": "MIT"  
+}

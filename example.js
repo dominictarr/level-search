@@ -1,5 +1,6 @@
 var opts = require('optimist').argv
 opts.clean = opts.clean === true
+
 var level = require('level-test')(opts)
 var search = require('./')
 var sublevel = require('level-sublevel')
@@ -11,26 +12,11 @@ var bytewise = require('bytewise')
 
 var path = require('path')
 
-var JSONStream = require('JSONStream')
-var through = require('through')
-
 var db = sublevel(level('level-search-example', {encoding: 'json'}))
 
 var index = search(db, 'index')
 
 if(opts.clean) {
-  /*
-  process.stdin
-    .pipe(JSONStream.parse(['rows', true, 'doc', 'versions', true]))
-    .pipe(through(function (data) {
-      if(data.dist && data.dist.shasum) {
-        console.log(data.dist.shasum, data.name, data.version)
-        this.queue({key: data.name + '!' + data.dist.shasum, value: data})
-      }
-    }))
-    .pipe(db.createWriteStream())
-  */
-
   pull(
     pull.values([path.join(process.env.HOME, '.npm')]),
     pfs.star(),

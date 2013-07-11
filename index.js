@@ -80,7 +80,6 @@ module.exports = function (db, indexDb) {
 
         var k = key.pop()
         db.get(k, function (err, val) {
-          console.log(val)
           cb(err, {key: k, value: val, index: key})
         })
       }),

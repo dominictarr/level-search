@@ -26,10 +26,15 @@ function isText (obj) {
 
 module.exports = pairs
 
-function pairs (obj) {
+function pairs (obj, indexer) {
   var all = {}
+
+  indexer = indexer || function (a, b) { return [a, b] }
+
   function add (k, v, array) {
-    all[JSON.stringify(array ? [k, true, v] : [k, v])] = true
+    var item = indexer(k, v)
+    if(item != undefined)
+      all[JSON.stringify(item)] = true
   }
 
   ;(function _pairs (obj, p) {

@@ -29,12 +29,17 @@ module.exports = function (db, indexDb) {
   if('string' === typeof indexDb)
     indexDb = db.sublevel(indexDb)
 
+  function indexer (key, value) {
+    return [key, value]
+  }
+
+  indexDb.indexer = indexer
+
   db.pre(function (op, add) {
-    var keys = pairs(op.value)
+    var keys = pairs(op.value, indexer)
     keys.forEach(function (e) {
       var f = e.slice(), g = e.slice()
       e.push(op.key)
-      f.push(null); g.push({})
       add({key: encode(e), value: '0', type: 'put', prefix: indexDb})
     })
   })

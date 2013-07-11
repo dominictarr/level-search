@@ -2,6 +2,7 @@ var pairs = require('./pairs')
 var bytewise = require('./bytewise')
 var pl    = require('pull-level')
 var pull  = require('pull-stream')
+var toStream = require('pull-stream-to-stream')
 
 function isString (s) {
   return 'string' === typeof s
@@ -59,6 +60,10 @@ module.exports = function (db, indexDb) {
     }
   }
 
+  indexDb.createSearchStream = function (keys) {
+    return toStream(null, indexDb.search(keys))
+  }
+
   indexDb.search = function (keys) {
     //get the last two items that are usable as an index.
     // [string, string]
@@ -70,7 +75,6 @@ module.exports = function (db, indexDb) {
       pull.map(function (key) {
         return decode(key)
       }),
-      pull.through(console.log),
       pull.unique('2'),
       pull.asyncMap(function (key, cb) {
 

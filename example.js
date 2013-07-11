@@ -16,6 +16,7 @@ var db = sublevel(level('level-search-example', {encoding: 'json'}))
 
 var index = search(db, 'index')
 
+//--clean #index all package.json's in your cache.
 if(opts.clean) {
   pull(
     pull.values([path.join(process.env.HOME, '.npm')]),
@@ -53,22 +54,10 @@ if(opts.clean) {
 
   if(opts.explain)
     return console.log(index.explain(q))
-  
-  pull(
-    index.search(q),
-    pull.map(function (data) {
-      return data.value
-    }),
-    pull.drain(function (d) {
-      console.log(d)
-//      console.log({
-//        name: d.name,
-//        version: d.version,
-//        dependencies: d.dependencies
-//      })
-    }, function (err) {
-      if(err) throw err
-    })
-  )
+
+  //stream results
+  index.createSearchStream(q)
+    .on('data', console.log)
+
 }
 

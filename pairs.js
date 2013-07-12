@@ -29,12 +29,15 @@ module.exports = pairs
 function pairs (obj, indexer) {
   var all = {}
 
-  indexer = indexer || function (a, b) { return [a, b] }
+  indexer = indexer || function (a, b) { return [[a, b]] }
 
   function add (k, v, array) {
-    var item = indexer(k, v)
-    if(item != undefined)
-      all[JSON.stringify(item)] = true
+    var items = indexer(k, v)
+    if(items != undefined) {
+      items.forEach(function (item) {
+        all[JSON.stringify(item)] = true
+      })
+    }
   }
 
   ;(function _pairs (obj, p) {

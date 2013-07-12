@@ -30,19 +30,36 @@ module.exports = function (db, indexDb) {
     indexDb = db.sublevel(indexDb)
 
   function indexer (key, value) {
-    return [key, value]
+    return [[key, value]]
   }
 
   indexDb.indexer = indexer
 
-  db.pre(function (op, add) {
+  function createIndex (op, add) {
     var keys = pairs(op.value, indexer)
     keys.forEach(function (e) {
       var f = e.slice(), g = e.slice()
       e.push(op.key)
       add({key: encode(e), value: '0', type: 'put', prefix: indexDb})
     })
-  })
+  }
+
+  db.pre(createIndex)
+
+  indexDb.rebuild = function (cb) {
+    pull(
+      pl.read(db),
+      pull.map(function (op) {
+        var batch = []
+        createIndex(op, function (ch) {
+          batch.push(ch)
+        })
+        return batch
+      }),
+      pull.flatten(),
+      pl.write(indexDb, cb)
+    )
+  }
 
   indexDb.explain = function (keys) {
     var k = keys.slice().reverse()
@@ -54,6 +71,7 @@ module.exports = function (db, indexDb) {
     
     var min = query.slice()
     var max = query.slice()
+
     min.push(null)      //minimum
     max.push(undefined) //maximum
 
@@ -82,10 +100,8 @@ module.exports = function (db, indexDb) {
       }),
       pull.unique('2'),
       pull.asyncMap(function (key, cb) {
-
         var k = key.pop()
         db.get(k, function (err, val) {
-          console.log(val)
           cb(err, {key: k, value: val, index: key})
         })
       }),

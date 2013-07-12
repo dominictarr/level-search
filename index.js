@@ -93,8 +93,8 @@ module.exports = function (db, indexDb) {
     }
   }
 
-  indexDb.createSearchStream = function (keys) {
-    return toStream(null, indexDb.search(keys))
+  indexDb.createSearchStream = function (keys, opts) {
+    return toStream(null, indexDb.search(keys, opts))
   }
 
   indexDb.search = function (keys, _opts) {
@@ -124,6 +124,13 @@ module.exports = function (db, indexDb) {
       }),
       pull.filter(function (data) {
         return hasPath(data.value, keys)
+      }),
+      pull.map(function (data) {
+        if(_opts && _opts.keys == false)
+          return data.value
+        else if(_opts && _opts.values == false)
+          return data.key
+        return data
       })
     )
   }

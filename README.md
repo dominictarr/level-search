@@ -29,8 +29,23 @@ streamOfJSON //with {key:..., value:...}
 
 //retrive all the modules someone wrote...
 index.createSearchStream(['maintainers', true, 'name', username])
-.on('data', console.log)
+  .on('data', console.log)
 ```
+
+## rebuilding the index
+
+If want to add search to old data,
+or have been messing with stuff,
+you'll need to rebuild indexes.
+
+``` js
+index.rebuild(function (err) {
+  //the search index is ready to be used again
+})
+```
+
+If you insert keys while the rebuild, strange things could 
+happen, so if you do that, you need to rebuild again.
 
 ## License
 

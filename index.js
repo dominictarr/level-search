@@ -71,6 +71,8 @@ module.exports = function (db, indexDb) {
 
   indexDb.explain = function (keys) {
     var k = keys.slice().reverse()
+//    .filter(function (e) { return e !== true })
+
     while(k.length > 1 && (!isString(k[0]) || !isString(k[1]))) {
       k.shift()
     }
@@ -95,12 +97,14 @@ module.exports = function (db, indexDb) {
     return toStream(null, indexDb.search(keys))
   }
 
-  indexDb.search = function (keys) {
+  indexDb.search = function (keys, _opts) {
     //get the last two items that are usable as an index.
     // [string, string]
     // example... if pattern is ["dependencies", "optimist", true]
     // then retrive all modules that depend on optimist
     var opts = indexDb.explain(keys)
+    opts.reverse = _opts && _opts.reverse
+    opts.limit = _opts && _opts.limit
     return pull(
       pl.read(indexDb, opts),
       pull.map(function (key) {

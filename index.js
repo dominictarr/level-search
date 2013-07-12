@@ -14,10 +14,18 @@ var decode = bytewise.decode
 module.exports = function (db, indexDb) {
 
   function hasPath (obj, keys) {
-    for(var i in keys) {
-      var k = keys[i]
-      if(k === obj && 1 + +i === keys.length)
+    var _keys = keys.slice()
+    while(_keys.length) {
+      var k = _keys.shift()
+      if(k === obj && !_keys.length)
         return true
+      if(k === true && Array.isArray(obj)) {
+        for(var i = 0, l = obj.length; i < l; i++) {
+          var el = obj[i]
+          if(hasPath(el, _keys))
+            return true
+        }
+      }
       if('undefined' === typeof obj[k])
         return false
       else
@@ -75,12 +83,16 @@ module.exports = function (db, indexDb) {
       pull.map(function (key) {
         return decode(key)
       }),
-      pull.unique('2'),
+      pull.map(function (data) {
+        return data;
+      }),
+      pull.unique(function (key) {
+        return key[key.length - 1];
+      }),
       pull.asyncMap(function (key, cb) {
 
         var k = key.pop()
         db.get(k, function (err, val) {
-          console.log(val)
           cb(err, {key: k, value: val, index: key})
         })
       }),

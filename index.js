@@ -21,7 +21,8 @@ module.exports = function (db, indexDb) {
       if(k === obj && !_keys.length)
         return true
       if (isRegExp(k)) {
-        if (_keys.length === 0) return k.test(obj)
+        if (_keys.length === 0 && k.test(obj)) return true
+ 
         if (typeof obj !== 'object') return false
         var okeys = Object.keys(obj)
         for(var i = 0, l = okeys.length; i < l; i++) {

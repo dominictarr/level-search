@@ -3,6 +3,7 @@ var bytewise = require('./bytewise')
 var pl    = require('pull-level')
 var pull  = require('pull-stream')
 var toStream = require('pull-stream-to-stream')
+var safeRegex = require('safe-regex')
 
 function isString (s) {
   return 'string' === typeof s
@@ -19,6 +20,18 @@ module.exports = function (db, indexDb) {
       var k = _keys.shift()
       if(k === obj && !_keys.length)
         return true
+      if (isRegExp(k)) {
+        if (_keys.length === 0 && k.test(obj)) return true
+ 
+        if (typeof obj !== 'object') return false
+        var okeys = Object.keys(obj)
+        for(var i = 0, l = okeys.length; i < l; i++) {
+          if (k.test(okeys[i])) break
+        }
+        if (i === l) return false
+        obj = obj[okeys[i]]
+        continue
+      }
       if(k === true && Array.isArray(obj)) {
         for(var i = 0, l = obj.length; i < l; i++) {
           var el = obj[i]
@@ -102,9 +115,23 @@ module.exports = function (db, indexDb) {
     // [string, string]
     // example... if pattern is ["dependencies", "optimist", true]
     // then retrive all modules that depend on optimist
+    if (isRegExp(keys[0])) {
+      return function (_, cb) {
+        return cb(new Error('first-key regular expressions not supported'))
+      }
+    }
+    
     var opts = indexDb.explain(keys)
     opts.reverse = _opts && _opts.reverse
     opts.limit = _opts && _opts.limit
+    
+    for(var i = 0, l = keys.length; i < l; i++) {
+      if (isRegExp(keys[i]) && !safeRegex(keys[i])) {
+        return function (_, cb) {
+          return cb(new Error('unsafe regular expression'))
+        }
+      }
+    }
     return pull(
       pl.read(indexDb, opts),
       pull.map(function (key) {
@@ -137,3 +164,5 @@ module.exports = function (db, indexDb) {
 
   return indexDb
 }
+
+function isRegExp (x) { return {}.toString.call(x) === '[object RegExp]' }

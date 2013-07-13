@@ -20,8 +20,17 @@ module.exports = function (db, indexDb) {
       var k = _keys.shift()
       if(k === obj && !_keys.length)
         return true
-      if (isRegExp(k))
-        return k.test(obj)
+      if (isRegExp(k)) {
+        if (_keys.length === 0) return k.test(obj)
+        if (typeof obj !== 'object') return false
+        var okeys = Object.keys(obj)
+        for(var i = 0, l = okeys.length; i < l; i++) {
+          if (k.test(okeys[i])) break
+        }
+        if (i === l) return false
+        obj = obj[okeys[i]]
+        continue
+      }
       if(k === true && Array.isArray(obj)) {
         for(var i = 0, l = obj.length; i < l; i++) {
           var el = obj[i]

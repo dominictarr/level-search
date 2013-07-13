@@ -3,6 +3,7 @@ var bytewise = require('./bytewise')
 var pl    = require('pull-level')
 var pull  = require('pull-stream')
 var toStream = require('pull-stream-to-stream')
+var safeRegex = require('safe-regex')
 
 function isString (s) {
   return 'string' === typeof s
@@ -107,6 +108,14 @@ module.exports = function (db, indexDb) {
     var opts = indexDb.explain(keys)
     opts.reverse = _opts && _opts.reverse
     opts.limit = _opts && _opts.limit
+    
+    for(var i = 0, l = keys.length; i < l; i++) {
+      if (isRegExp(keys[i]) && !safeRegex(keys[i])) {
+        return function (_, cb) {
+          return cb(new Error('unsafe regular expression'))
+        }
+      }
+    }
     return pull(
       pl.read(indexDb, opts),
       pull.map(function (key) {

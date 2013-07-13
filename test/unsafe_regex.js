@@ -34,15 +34,12 @@ tape('init', function (t) {
 tape('unsafe regex', function (t) {
   t.plan(1)
 
-  console.log(index.explain([/(x+x+)+y/]))
+  console.log(index.explain(['location',/(x+x+)+y/]))
 
-  var stream = pull(
-    index.search([/(x+x+)+y/]),
+  pull(
+    index.search(['location',/(x+x+)+y/]),
     pull.collect(function (err, matches) {
-      t.fail('should have errored at this point')
+      t.ok(/unsafe/i.test(err), 'unsafe regular expression detected')
     })
   )
-  stream.on('error', function (err) {
-    t.ok(/unsafe/i.test(err), 'unsafe regular expression detected')
-  })
 })

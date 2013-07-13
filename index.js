@@ -19,6 +19,8 @@ module.exports = function (db, indexDb) {
       var k = _keys.shift()
       if(k === obj && !_keys.length)
         return true
+      if (isRegExp(k))
+        return k.test(obj)
       if(k === true && Array.isArray(obj)) {
         for(var i = 0, l = obj.length; i < l; i++) {
           var el = obj[i]
@@ -137,3 +139,5 @@ module.exports = function (db, indexDb) {
 
   return indexDb
 }
+
+function isRegExp (x) { return {}.toString.call(x) === '[object RegExp]' }

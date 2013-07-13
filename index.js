@@ -115,6 +115,12 @@ module.exports = function (db, indexDb) {
     // [string, string]
     // example... if pattern is ["dependencies", "optimist", true]
     // then retrive all modules that depend on optimist
+    if (isRegExp(keys[0])) {
+      return function (_, cb) {
+        return cb(new Error('first-key regular expressions not supported'))
+      }
+    }
+    
     var opts = indexDb.explain(keys)
     opts.reverse = _opts && _opts.reverse
     opts.limit = _opts && _opts.limit

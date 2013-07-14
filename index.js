@@ -124,6 +124,7 @@ module.exports = function (db, indexDb) {
     var opts = indexDb.explain(keys)
     opts.reverse = _opts && _opts.reverse
     opts.limit = _opts && _opts.limit
+    opts.tail = _opts && _opts.tail
     
     for(var i = 0, l = keys.length; i < l; i++) {
       if (isRegExp(keys[i]) && !safeRegex(keys[i])) {

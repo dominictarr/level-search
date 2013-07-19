@@ -41,6 +41,8 @@ function pairs (obj, indexer) {
   }
 
   ;(function _pairs (obj, p) {
+    if(isString(obj))
+      return []
     for(var k in obj) {
         if(p != null && !isArray(obj))
           add(p, k)

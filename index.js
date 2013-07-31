@@ -138,9 +138,6 @@ module.exports = function (db, indexDb) {
       pull.map(function (key) {
         return decode(key)
       }),
-      pull.map(function (data) {
-        return data;
-      }),
       pull.unique(function (key) {
         return key[key.length - 1];
       }),

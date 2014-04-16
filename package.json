@@ -1,7 +1,7 @@
 {
   "name": "level-search",
   "description": "universal search for leveldb",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "homepage": "https://github.com/dominictarr/level-search",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
     "JSONStream": "~0.6.4",
     "request": "~2.22.0",
     "through": "~2.3.4",
-    "shasum": "0.0.3",
+    "shasum": "0.0.3"
   },
   "scripts": {
     "test": "set -e; for t in test/*.js; do node $t; done"

@@ -32,6 +32,13 @@ index.createSearchStream(['maintainers', true, 'name', username])
   .on('data', console.log)
 ```
 
+you can also request ranges!
+
+``` js
+index.createSearchStream(['date', {min: new Date('2009-0-0'), max: Date.now()}])
+  .on('data', console.log)
+```
+
 ## methods
 
 ``` js

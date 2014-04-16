@@ -1,5 +1,3 @@
-
-
 function isString (obj) {
   return 'string' === typeof obj
 }
@@ -47,12 +45,14 @@ function pairs (obj, indexer) {
         if(p != null && !isArray(obj))
           add(p, k)
 
-        if(isObject(obj[k])) {
+        if(isPrimitive(obj[k]))
+          add(k, obj[k])
+        else if(obj[k] instanceof Date)
+          add(k, obj[k].toISOString())
+        else if(isObject(obj[k])) {
           _pairs(obj[k], isArray(obj) ? p : k, isArray(obj))
         } else if(p != null)
           add(isArray(obj) ? p : k, obj[k], isArray(obj))
-        else if(isPrimitive(obj[k]))
-          add(k, obj[k])
     }
   })(obj)
 

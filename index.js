@@ -62,11 +62,7 @@ module.exports = function (db, indexDb) {
     // [string, string]
     // example... if pattern is ["dependencies", "optimist", true]
     // then retrive all modules that depend on optimist
-    if (u.isRegExp(keys[0])) {
-      return function (_, cb) {
-        return cb(new Error('first-key regular expressions not supported'))
-      }
-    }
+    keys = keys.map(u.toIndexable)
     
     var opts = indexDb.explain(keys)
     opts.reverse = _opts && _opts.reverse
@@ -80,6 +76,7 @@ module.exports = function (db, indexDb) {
         }
       }
     }
+
     return pull(
       pl.read(indexDb, opts),
       pull.map(function (key) {
@@ -95,7 +92,7 @@ module.exports = function (db, indexDb) {
         })
       }),
       pull.filter(function (data) {
-        return u.hasPath(data.value, keys)
+        if(u.hasPath(data.value, keys)) return true
       }),
       pull.map(function (data) {
         if(_opts && _opts.keys == false)

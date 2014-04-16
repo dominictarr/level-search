@@ -10,7 +10,7 @@
   "dependencies": {
     "bytewise": "0.5.0",
     "pull-stream": "2.20",
-    "pull-level": "1.1.8",
+    "pull-level": "^1.1.8",
     "pull-stream-to-stream": "~1.2.6",
     "safe-regex": "~0.0.0"
   },
@@ -23,7 +23,7 @@
     "JSONStream": "~0.6.4",
     "request": "~2.22.0",
     "through": "~2.3.4",
-    "shasum": "0.0.3"
+    "shasum": "0.0.3",
   },
   "scripts": {
     "test": "set -e; for t in test/*.js; do node $t; done"

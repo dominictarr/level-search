@@ -16,6 +16,9 @@ var u = require('./util')
 
 module.exports = function (db, indexDb) {
 
+  if(!indexDb)
+    indexDb = 'search' //default to name of this module.
+
   if('string' === typeof indexDb)
     indexDb = db.sublevel(indexDb)
 

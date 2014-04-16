@@ -19,7 +19,7 @@ var sub    = require('level-sublevel')
 var search = require('level-search')
 
 var db = sub(level(pathToLevelDir, {valueEncoding: 'json'}))
-var index = search(db, 'index')
+var index = search(db, 'search') //by default the sublevel has the same name as the module.
 
 //then put loads of JSONdata into the database...
 streamOfJSON //with {key:..., value:...}

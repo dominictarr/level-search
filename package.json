@@ -10,7 +10,7 @@
   "dependencies": {
     "bytewise": "0.5.0",
     "pull-stream": "2.20",
-    "pull-level": "^1.1.8",
+    "pull-level": ">=1.1.8 <2.0.0",
     "pull-stream-to-stream": "~1.2.6",
     "safe-regex": "~0.0.0",
     "typewiselite": "~0.7.0"

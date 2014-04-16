@@ -12,40 +12,9 @@ function isString (s) {
 var encode = bytewise.encode
 var decode = bytewise.decode
 
-module.exports = function (db, indexDb) {
+var u = require('./util')
 
-  function hasPath (obj, keys) {
-    var _keys = keys.slice()
-    while(_keys.length) {
-      var k = _keys.shift()
-      if(k === obj && !_keys.length)
-        return true
-      if (isRegExp(k)) {
-        if (_keys.length === 0 && k.test(obj)) return true
- 
-        if (typeof obj !== 'object') return false
-        var okeys = Object.keys(obj)
-        for(var i = 0, l = okeys.length; i < l; i++) {
-          if (k.test(okeys[i])) break
-        }
-        if (i === l) return false
-        obj = obj[okeys[i]]
-        continue
-      }
-      if(k === true && Array.isArray(obj)) {
-        for(var i = 0, l = obj.length; i < l; i++) {
-          var el = obj[i]
-          if(hasPath(el, _keys))
-            return true
-        }
-      }
-      if('undefined' === typeof obj[k])
-        return false
-      else
-        obj = obj[k]
-    }
-    return true
-  }
+module.exports = function (db, indexDb) {
 
   if('string' === typeof indexDb)
     indexDb = db.sublevel(indexDb)
@@ -82,29 +51,7 @@ module.exports = function (db, indexDb) {
     )
   }
 
-  indexDb.explain = function (keys) {
-    var k = keys.slice().reverse()
-//    .filter(function (e) { return e !== true })
-
-    while(k.length > 1 && (!isString(k[0]) || !isString(k[1]))) {
-      k.shift()
-    }
-
-    var query = k.slice(0, 2).reverse() //.reverse()
-    
-    var min = query.slice()
-    var max = query.slice()
-
-    min.push(null)      //minimum
-    max.push(undefined) //maximum
-
-    return {
-      values: false,
-      _min: min, _max: max,
-      min: encode(min),
-      max: encode(max)
-    }
-  }
+  indexDb.explain = u.explain
 
   indexDb.createSearchStream = function (keys, opts) {
     return toStream(null, indexDb.search(keys, opts))
@@ -115,7 +62,7 @@ module.exports = function (db, indexDb) {
     // [string, string]
     // example... if pattern is ["dependencies", "optimist", true]
     // then retrive all modules that depend on optimist
-    if (isRegExp(keys[0])) {
+    if (u.isRegExp(keys[0])) {
       return function (_, cb) {
         return cb(new Error('first-key regular expressions not supported'))
       }
@@ -127,7 +74,7 @@ module.exports = function (db, indexDb) {
     opts.tail = _opts && _opts.tail
     
     for(var i = 0, l = keys.length; i < l; i++) {
-      if (isRegExp(keys[i]) && !safeRegex(keys[i])) {
+      if (u.isRegExp(keys[i]) && !safeRegex(keys[i])) {
         return function (_, cb) {
           return cb(new Error('unsafe regular expression'))
         }
@@ -148,7 +95,7 @@ module.exports = function (db, indexDb) {
         })
       }),
       pull.filter(function (data) {
-        return hasPath(data.value, keys)
+        return u.hasPath(data.value, keys)
       }),
       pull.map(function (data) {
         if(_opts && _opts.keys == false)
@@ -163,4 +110,3 @@ module.exports = function (db, indexDb) {
   return indexDb
 }
 
-function isRegExp (x) { return {}.toString.call(x) === '[object RegExp]' }

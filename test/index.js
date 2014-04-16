@@ -53,3 +53,18 @@ tape('value', function (t) {
   )
 
 })
+
+tape('range', function (t) {
+
+  console.log(index.explain([true, 'foo', 'bar']))
+
+  pull(
+    index.search([true, 'foo', 'bar']),
+    pull.collect(function (err, ary) {
+      console.log('ary', JSON.stringify(ary, null, 2))
+      t.end()
+
+    })
+  )
+
+})

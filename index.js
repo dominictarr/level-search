@@ -78,7 +78,13 @@ module.exports = function (db, indexDb) {
           return cb(new Error('unsafe regular expression'))
         }
       }
+
+      if(u.isRegExp(keys[i])){
+        opts.limit = null
+      }
     }
+
+    var counter = 0;
 
     return pull(
       pl.read(indexDb, opts),
@@ -95,7 +101,9 @@ module.exports = function (db, indexDb) {
         })
       }),
       pull.filter(function (data) {
-        if(u.hasPath(data.value, keys)) return true
+        if(u.hasPath(data.value, keys)){
+          return _opts && _opts.limit ? counter++<_opts.limit : true
+        }
       }),
       pull.map(function (data) {
         if(_opts && _opts.keys == false)

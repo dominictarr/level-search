@@ -84,6 +84,8 @@ module.exports = function (db, indexDb) {
       }
     }
 
+    // keep track of soft-limit (when there is a RegExp)
+    // this uses pull.take so the level stream is cancelled when the limit is hit
     var counter = 0;
 
     return pull(
@@ -100,9 +102,13 @@ module.exports = function (db, indexDb) {
           cb(err, {key: k, value: val, index: key})
         })
       }),
+      pull.take(function (data){
+        return _opts && _opts.limit ? counter<_opts.limit : true
+      }),
       pull.filter(function (data) {
         if(u.hasPath(data.value, keys)){
-          return _opts && _opts.limit ? counter++<_opts.limit : true
+          if(_opts && _opts.limit) counter++
+          return true
         }
       }),
       pull.map(function (data) {

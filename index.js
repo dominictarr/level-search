@@ -101,9 +101,9 @@ module.exports = function (db, indexDb) {
           cb(err, {key: k, value: val, index: key})
         })
       }),
-      pull.take(function (data){
-        return _opts && _opts.limit ? counter<_opts.limit : true
-      }),
+      (_opts && _opts.limit) ? pull.take(function (data){
+        return counter<_opts.limit
+      }) : undefined,
       pull.filter(function (data) {
         if(u.hasPath(data.value, keys)){
           if(_opts && _opts.limit) counter++
